@@ -1,0 +1,31 @@
+
+canvas
+{
+	//border: 1px solid #000000;
+}
+
+#canvasManager
+{
+	position: relative;
+	margin: 0 auto;
+}
+
+#background 
+{
+  z-index: 0;
+}
+
+#LeeSin 
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+#Skill
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
