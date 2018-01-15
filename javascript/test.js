@@ -337,8 +337,8 @@ function gameload()
 				
 				this.state=true;
 				
-				setTimeout(Sdelete,2000,this.x-22,this.y-13,45,45);
-				setTimeout("ObjectWord.state=false;",2000);
+				setTimeout(Sdelete,1000,this.x-22,this.y-13,45,45);
+				setTimeout("ObjectWord.state=false;",1000);
 			}
 
 		}
