@@ -24,6 +24,9 @@ function gameload()
 	//如果true將會執行rightMousePress 持續記錄座標(滑鼠按住)
 	var goStore = false;
 	
+	//如果為false代表正在使用技能無法移動;
+	var goMove = true;
+	
 	//移動速度
 	var speed = 4.5;
 	
@@ -55,7 +58,7 @@ function gameload()
 	//儲存滑鼠的座標
 	function trackMousePosition(event) 
 	{
-		if(event.button==2)
+		if(event.button==2 && goMove)
 		{
 			targetPositionX =  event.clientX;
 			distanceX = Math.abs(targetPositionX - player.x);
@@ -75,7 +78,9 @@ function gameload()
 	//右健按住持續移動
 	function rightMousePress(event) 
 	{
-		if(goStore==true)
+		MouseX = event.clientX;
+		MouseY = event.clientY;
+		if(goStore && goMove)
 		{
 			targetPositionX =  event.clientX;
 			distanceX = Math.abs(targetPositionX - player.x);
@@ -87,12 +92,8 @@ function gameload()
 			
 			Time = distance / speed;
 			
-			goStore = true;
 			goFLAG = true;
 		}
-		
-		MouseX = event.clientX;
-		MouseY = event.clientY;
 	};	
 	
 	//右健彈起
@@ -111,14 +112,36 @@ function gameload()
 		// R 82
 		// D 68
 		// F 70
+		// S 83
 		switch(event.keyCode)
 		{
 			case 52:
-				ObjectWord.draw(MouseX,MouseY);
+				if(ObjectWord.state==false)
+				{
+					ObjectWord.state=true;
+					setTimeout(Sdelete,1800,ObjectWord.x-25,ObjectWord.y-16,50,50);
+					setTimeout("ObjectWord.state=false;ObjectWord.x=-99;ObjectWord.y=-99;",1800);
+				}
 				break;
 			case 81:
 				break;
 			case 87:
+				if(ObjectWord.use)
+				{
+					speed = 30;
+					targetPositionX =  ObjectWord.x;
+					distanceX = Math.abs(targetPositionX - player.x);
+					
+					targetPositionY =  ObjectWord.y;
+					distanceY = Math.abs(targetPositionY - player.y);
+					
+					distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+					
+					Time = distance / speed;
+					
+					goFLAG = true;
+					
+				}
 				break;
 			case 69:
 				break;
@@ -127,6 +150,9 @@ function gameload()
 			case 68:
 				break;
 			case 70:
+				break;
+			case 83:
+				goFLAG = false;
 				break;
 		}
 	}
@@ -259,6 +285,7 @@ function gameload()
 				if(this.x == targetPositionX && this.y == targetPositionY)
 				{
 					goFLAG = false;
+					speed = 4.5;
 				}
 			}
 		}
@@ -290,6 +317,7 @@ function gameload()
 		this.y=0;
 		this.size=10;
 		this.state=false;
+		this.use=false;
 		
 		this.draw = function(mouseX,mouseY) 
 		{
@@ -297,9 +325,22 @@ function gameload()
 			{
 				this.x=mouseX-10;
 				this.y=mouseY-20;
+			}
+				
+			if(this.state==true)
+			{
+				if(mouseX-10>this.x-40 && mouseX-10<this.x+20 && mouseY-20>this.y-27 && mouseY-10<this.y+37)
+					this.use=true;
+				else
+					this.use=false;
+				
+				if(this.use)
+					Sctx.strokeStyle = '#ff0000';
+				else
+					Sctx.strokeStyle = '#000000';
 				
 				Sctx.beginPath();
-				Sctx.lineWidth = 3;
+				Sctx.lineWidth = 5;
 				Sctx.arc(this.x,this.y,this.size,0,Math.PI*2,true);
 				Sctx.stroke();
 				Sctx.fillStyle = "#44BB44";
@@ -307,7 +348,6 @@ function gameload()
 				Sctx.closePath();
 					
 				Sctx.beginPath();
-				Sctx.lineWidth = 2;
 				Sctx.moveTo(this.x-4,this.y+12);
 				Sctx.lineTo(this.x+4,this.y+12);
 				Sctx.lineTo(this.x+7,this.y+30);
@@ -319,7 +359,6 @@ function gameload()
 				Sctx.closePath();	
 					
 				Sctx.beginPath();
-				Sctx.lineWidth = 2;
 				Sctx.moveTo(this.x-4,this.y+12);
 				Sctx.lineTo(this.x-20,this.y+3);
 				Sctx.lineTo(this.x-20,this.y+10);
@@ -334,12 +373,9 @@ function gameload()
 				Sctx.fillStyle = "#c1b74b";
 				Sctx.fill();
 				Sctx.closePath();
-				
-				this.state=true;
-				
-				setTimeout(Sdelete,1000,this.x-22,this.y-13,45,45);
-				setTimeout("ObjectWord.state=false;",1000);
 			}
+
+				
 
 		}
 	}
@@ -354,6 +390,7 @@ function gameload()
 	{
 		player.move();
 		player.draw();
+		ObjectWord.draw(MouseX,MouseY);
     }
 	
 	setInterval(doGameLoop, 16);
