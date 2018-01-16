@@ -128,6 +128,7 @@ function gameload()
 			case 87:
 				if(ObjectWord.use)
 				{
+					
 					speed = 30;
 					targetPositionX =  ObjectWord.x;
 					distanceX = Math.abs(targetPositionX - player.x);
