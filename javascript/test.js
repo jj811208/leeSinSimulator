@@ -27,8 +27,7 @@ function gameload()
 	//如果為false代表正在使用技能無法移動;
 	var goMove = true;
 	
-	//移動速度
-	var speed = 4.5;
+
 	
 	//滑鼠位置
 	var MouseX = 0;
@@ -68,7 +67,7 @@ function gameload()
 			
 			distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
 			
-			Time = distance / speed;
+			Time = distance / player.speed;
 			
 			goStore = true;
 			goFLAG = true;
@@ -90,7 +89,7 @@ function gameload()
 			
 			distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
 			
-			Time = distance / speed;
+			Time = distance / player.speed;
 			
 			goFLAG = true;
 		}
@@ -129,7 +128,7 @@ function gameload()
 				if(ObjectWord.use)
 				{
 					
-					speed = 30;
+					player.speed = 30;
 					targetPositionX =  ObjectWord.x;
 					distanceX = Math.abs(targetPositionX - player.x);
 					
@@ -138,7 +137,7 @@ function gameload()
 					
 					distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
 					
-					Time = distance / speed;
+					Time = distance / player.speed;
 					
 					goFLAG = true;
 					
@@ -147,6 +146,10 @@ function gameload()
 			case 69:
 				break;
 			case 82:
+				if(enemy.Ruse)
+				{
+					enemy.fly=true;
+				}
 				break;
 			case 68:
 				break;
@@ -161,7 +164,8 @@ function gameload()
 	player = new function() 
 	{
 		this.x = 50;
-		this.y = 50;
+		this.y = 50;	
+		this.speed = 5;
 		
 		this.draw = function() 
 		{
@@ -257,14 +261,14 @@ function gameload()
 				{
 					this.x += distanceX/Time;
 					
-					if(Math.abs(targetPositionX - this.x) < speed*(distanceX/(distanceX+distanceY)))
+					if(Math.abs(targetPositionX - this.x) < this.speed*(distanceX/(distanceX+distanceY)))
 						this.x = targetPositionX;
 				}
 				else if(targetPositionX < this.x)
 				{
 					this.x -= distanceX/Time;
 					
-					if(Math.abs(targetPositionX - this.x) < speed*(distanceX/(distanceX+distanceY)))
+					if(Math.abs(targetPositionX - this.x) < this.speed*(distanceX/(distanceX+distanceY)))
 						this.x = targetPositionX;
 				}
 				
@@ -272,32 +276,141 @@ function gameload()
 				{
 					this.y += distanceY/Time;
 					
-					if(Math.abs(targetPositionY - this.y) < speed*(distanceY/(distanceX+distanceY)))
+					if(Math.abs(targetPositionY - this.y) < this.speed*(distanceY/(distanceX+distanceY)))
 						this.y = targetPositionY;
 				}
 				else if(targetPositionY < this.y)
 				{
 					this.y -= distanceY/Time;
 					
-					if(Math.abs(targetPositionY - this.y) < speed*(distanceY/(distanceX+distanceY)))
+					if(Math.abs(targetPositionY - this.y) < this.speed*(distanceY/(distanceX+distanceY)))
 						this.y = targetPositionY;
 				}
 				
 				if(this.x == targetPositionX && this.y == targetPositionY)
 				{
 					goFLAG = false;
-					speed = 4.5;
+					this.speed = 4.5;
 				}
 			}
 		}
 		
 	}
 	
+	enemy = new function()
+	{
+		this.x=500;
+		this.y=300;
+		this.size=30;
+		this.kickSpeed=20;
+		this.Ruse=false;
+		this.fly=false;
+		
+		this.Slope = 0;
+		this.distance = 300;
+		this.distanceX = 0;
+		this.distanceY = 0;
+		this.targetPositionX = 0;
+		this.targetPositionY = 0;
+		this.Time=0;
+		
+		
+		
+		this.draw = function() 
+		{
+			if(MouseX-8>this.x-36 && MouseX-8<this.x+36 && MouseY-8>this.y-36 && MouseY-8<this.y+36)
+				this.Ruse=true;
+			else
+				this.Ruse=false;
+			
+			if(this.Ruse)
+				Sctx.strokeStyle = '#ff0000';
+			else
+				Sctx.strokeStyle = '#000000';
+			
+			Sdelete(this.x-40,this.y-40,80,80);
+			
+			Sctx.beginPath();
+			Sctx.lineWidth = 8;
+			Sctx.arc(this.x,this.y,this.size,0,Math.PI*2,true);
+			Sctx.stroke();
+			Sctx.fillStyle = "#448844";
+			Sctx.fill();
+			Sctx.closePath();
+			
+			this.kicked();
+		}
+		
+		this.kicked = function() 
+		{
+			if(this.fly==false)
+			{
+				this.Slope = (this.y-player.y)/(this.x-player.x);
+				this.distance = 300;
+				this.distanceX = Math.sqrt( (this.distance*this.distance)-((this.y-player.y)*(this.y-player.y)) );
+				this.distanceY = Math.sqrt( (this.distance*this.distance)-((this.x-player.x)*(this.x-player.x)) );
+				this.targetPositionX = this.x+ this.distanceX;
+				this.targetPositionY = this.y+ this.distanceY;
+				this.Time = this.distance / this.kickSpeed;
+				
+				console.log('計算踢人的座標位置中....');
+			}
+			else
+			{
+				if(this.targetPositionX > this.x)
+				{
+					this.x += this.distanceX/this.Time;
+					
+					if(Math.abs(this.targetPositionX - this.x) < this.kickSpeed*(this.distanceX/(this.distanceX+this.distanceY)))
+						this.x = this.targetPositionX;
+				}
+				else if(this.targetPositionX < this.x)
+				{
+					this.x -= this.distanceX/this.Time;
+					
+					if(Math.abs(this.targetPositionX - this.x) < this.kickSpeed*(this.distanceX/(this.distanceX+this.distanceY)))
+						this.x = this.targetPositionX;
+				}
+				
+				if(this.targetPositionY > this.y)
+				{
+					this.y += this.distanceY/this.Time;
+					
+					if(Math.abs(this.targetPositionY - this.y) < this.kickSpeed*(this.distanceY/(this.distanceX+this.distanceY)))
+						this.y = this.targetPositionY;
+				}
+				else if(this.targetPositionY < this.y)
+				{
+					this.y -= this.distanceY/this.Time;
+					
+					if(Math.abs(this.targetPositionY - this.y) < this.kickSpeed*(this.distanceY/(this.distanceX+this.distanceY)))
+						this.y = this.targetPositionY;
+				}
+				if(this.x == this.targetPositionX && this.y == this.targetPositionY)
+				{
+					this.fly = false;
+					console.log('到達目的地了');
+					
+				}
+			}
+			// console.log(Slope);
+			// console.log(distance);
+			// console.log(distanceX);
+			// console.log(distanceY);
+			// console.log(targetPositionX);
+			// console.log(targetPositionY);
+			// console.log(Time);
+			
+
+		}
+	}
+	
+	
 	ObjectQ = new function()
 	{
 		this.x=200;
 		this.y=50;
-		this.size=20
+		this.size=20;
 		
 		this.draw = function() 
 		{
@@ -308,7 +421,9 @@ function gameload()
 			Sctx.fillStyle = "rgba(79, 193, 238, 0.5)";
 			Sctx.fill();
 			Sctx.closePath();
-		}
+		}		
+		
+
 	}	
 	
 	//眼
@@ -391,6 +506,7 @@ function gameload()
 	{
 		player.move();
 		player.draw();
+		enemy.draw();
 		ObjectWord.draw(MouseX,MouseY);
     }
 	
