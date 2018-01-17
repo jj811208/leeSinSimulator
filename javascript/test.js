@@ -27,8 +27,6 @@ function gameload()
 	//如果為false代表正在使用技能無法移動;
 	var goMove = true;
 	
-
-	
 	//滑鼠位置
 	var MouseX = 0;
 	var MouseY = 0;
@@ -149,6 +147,20 @@ function gameload()
 				if(enemy.Ruse)
 				{
 					enemy.fly=true;
+					
+					console.log(enemy.Sx);
+					console.log(enemy.distance);
+					console.log(enemy.distanceX);
+					console.log(enemy.distanceY);
+					console.log(enemy.targetPositionX);
+					console.log(enemy.targetPositionY);
+					
+		
+		
+		
+		
+		
+		
 				}
 				break;
 			case 68:
@@ -302,19 +314,19 @@ function gameload()
 		this.x=500;
 		this.y=300;
 		this.size=30;
-		this.kickSpeed=20;
+		this.kickSpeed=10;
 		this.Ruse=false;
 		this.fly=false;
 		
+		//移動需要計算的東西
 		this.Slope = 0;
+		this.Sx = 0;
 		this.distance = 300;
 		this.distanceX = 0;
 		this.distanceY = 0;
 		this.targetPositionX = 0;
 		this.targetPositionY = 0;
 		this.Time=0;
-		
-		
 		
 		this.draw = function() 
 		{
@@ -328,7 +340,7 @@ function gameload()
 			else
 				Sctx.strokeStyle = '#000000';
 			
-			Sdelete(this.x-40,this.y-40,80,80);
+			Sdelete(this.x-70,this.y-70,140,140);
 			
 			Sctx.beginPath();
 			Sctx.lineWidth = 8;
@@ -346,25 +358,61 @@ function gameload()
 			if(this.fly==false)
 			{
 				this.Slope = (this.y-player.y)/(this.x-player.x);
-				this.distance = 300;
-				this.distanceX = Math.sqrt( (this.distance*this.distance)-((this.y-player.y)*(this.y-player.y)) );
-				this.distanceY = Math.sqrt( (this.distance*this.distance)-((this.x-player.x)*(this.x-player.x)) );
-				this.targetPositionX = this.x+ this.distanceX;
-				this.targetPositionY = this.y+ this.distanceY;
+				
+				// 可把 (this.y-player.y) 代成Y  (this.x-player.x)代成X 來理解下面這段算式  這段在計算 X Y要前進多少
+				// ((this.y-player.y)*x)^2 + ((this.x-player.x)*x)^2 = 90000;
+				// ((this.y-player.y)*x)^2 + ((this.x-player.x)*x)^2 = 90000;
+				// ((this.y-player.y)^2 * x^2 ) + ((this.x-player.x)^2 * x^2 ) = 90000;
+				// (((this.y-player.y))^2 + ((this.x-player.x))^2) * x^2 = 90000;
+				// x^2 = 90000/(((this.y-player.y))^2 + ((this.x-player.x))^2);
+				// x = Math.sqrt( 90000/(((this.y-player.y))^2 + ((this.x-player.x))^2) );
+				this.Sx = Math.sqrt( Math.pow(this.distance,2)/(Math.pow( (this.y-player.y), 2) + Math.pow( (this.x-player.x), 2) ) );				
+				this.distance = 150;
+				this.distanceX = Math.ceil( Math.sqrt( Math.pow(this.distance, 2) - Math.pow((this.y-player.y), 2) * this.Sx ) );
+				this.distanceY = Math.ceil( Math.sqrt( Math.pow(this.distance, 2) - Math.pow((this.x-player.x), 2) * this.Sx ) );
 				this.Time = this.distance / this.kickSpeed;
+				
+				console.log('this.x:'+this.x);
+				console.log('this.y:'+this.y);
+				console.log('player.x:'+player.x);
+				console.log('player.y:'+player.y);
+				console.log('distance:'+this.distance);
+				console.log('distanceX:'+this.distanceX);
+				console.log('distanceY:'+this.distanceY);
+				console.log('Sx:'+this.Sx);
+				
+				
+				if(this.x-player.x > 0)
+				{
+					this.targetPositionX = this.x+ this.distanceX;
+				}
+				else if(this.x-player.x < 0)
+				{
+					this.targetPositionX = this.x- this.distanceX;
+				}
+				
+				if(this.y-player.y > 0)
+				{
+					this.targetPositionY = this.y+ this.distanceY;
+				}
+				else if(this.y-player.y < 0)
+				{
+					this.targetPositionY = this.y- this.distanceY;
+				}
+				
 				
 				console.log('計算踢人的座標位置中....');
 			}
 			else
 			{
-				if(this.targetPositionX > this.x)
+				if(this.x-player.x > 0)
 				{
 					this.x += this.distanceX/this.Time;
 					
 					if(Math.abs(this.targetPositionX - this.x) < this.kickSpeed*(this.distanceX/(this.distanceX+this.distanceY)))
 						this.x = this.targetPositionX;
 				}
-				else if(this.targetPositionX < this.x)
+				else if(this.x-player.x < 0)
 				{
 					this.x -= this.distanceX/this.Time;
 					
@@ -372,14 +420,14 @@ function gameload()
 						this.x = this.targetPositionX;
 				}
 				
-				if(this.targetPositionY > this.y)
+				if(this.y-player.y > 0)
 				{
 					this.y += this.distanceY/this.Time;
 					
 					if(Math.abs(this.targetPositionY - this.y) < this.kickSpeed*(this.distanceY/(this.distanceX+this.distanceY)))
 						this.y = this.targetPositionY;
 				}
-				else if(this.targetPositionY < this.y)
+				else if(this.y-player.y < 0)
 				{
 					this.y -= this.distanceY/this.Time;
 					
