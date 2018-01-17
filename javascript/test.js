@@ -147,20 +147,6 @@ function gameload()
 				if(enemy.Ruse)
 				{
 					enemy.fly=true;
-					
-					console.log(enemy.Sx);
-					console.log(enemy.distance);
-					console.log(enemy.distanceX);
-					console.log(enemy.distanceY);
-					console.log(enemy.targetPositionX);
-					console.log(enemy.targetPositionY);
-					
-		
-		
-		
-		
-		
-		
 				}
 				break;
 			case 68:
@@ -273,14 +259,14 @@ function gameload()
 				{
 					this.x += distanceX/Time;
 					
-					if(Math.abs(targetPositionX - this.x) < this.speed*(distanceX/(distanceX+distanceY)))
+					if(Math.abs(targetPositionX - this.x) < distanceX/Time)
 						this.x = targetPositionX;
 				}
 				else if(targetPositionX < this.x)
 				{
 					this.x -= distanceX/Time;
 					
-					if(Math.abs(targetPositionX - this.x) < this.speed*(distanceX/(distanceX+distanceY)))
+					if(Math.abs(targetPositionX - this.x) < distanceX/Time)
 						this.x = targetPositionX;
 				}
 				
@@ -288,14 +274,14 @@ function gameload()
 				{
 					this.y += distanceY/Time;
 					
-					if(Math.abs(targetPositionY - this.y) < this.speed*(distanceY/(distanceX+distanceY)))
+					if(Math.abs(targetPositionY - this.y) < distanceY/Time)
 						this.y = targetPositionY;
 				}
 				else if(targetPositionY < this.y)
 				{
 					this.y -= distanceY/Time;
 					
-					if(Math.abs(targetPositionY - this.y) < this.speed*(distanceY/(distanceX+distanceY)))
+					if(Math.abs(targetPositionY - this.y) < distanceY/Time)
 						this.y = targetPositionY;
 				}
 				
@@ -314,14 +300,14 @@ function gameload()
 		this.x=500;
 		this.y=300;
 		this.size=30;
-		this.kickSpeed=10;
+		this.kickSpeed=8;
 		this.Ruse=false;
 		this.fly=false;
 		
 		//移動需要計算的東西
 		this.Slope = 0;
 		this.Sx = 0;
-		this.distance = 300;
+		this.distance = 340;
 		this.distanceX = 0;
 		this.distanceY = 0;
 		this.targetPositionX = 0;
@@ -357,30 +343,16 @@ function gameload()
 		{
 			if(this.fly==false)
 			{
-				this.Slope = (this.y-player.y)/(this.x-player.x);
-				
-				// 可把 (this.y-player.y) 代成Y  (this.x-player.x)代成X 來理解下面這段算式  這段在計算 X Y要前進多少
-				// ((this.y-player.y)*x)^2 + ((this.x-player.x)*x)^2 = 90000;
-				// ((this.y-player.y)*x)^2 + ((this.x-player.x)*x)^2 = 90000;
-				// ((this.y-player.y)^2 * x^2 ) + ((this.x-player.x)^2 * x^2 ) = 90000;
-				// (((this.y-player.y))^2 + ((this.x-player.x))^2) * x^2 = 90000;
-				// x^2 = 90000/(((this.y-player.y))^2 + ((this.x-player.x))^2);
-				// x = Math.sqrt( 90000/(((this.y-player.y))^2 + ((this.x-player.x))^2) );
-				this.Sx = Math.sqrt( Math.pow(this.distance,2)/(Math.pow( (this.y-player.y), 2) + Math.pow( (this.x-player.x), 2) ) );				
-				this.distance = 150;
-				this.distanceX = Math.ceil( Math.sqrt( Math.pow(this.distance, 2) - Math.pow((this.y-player.y), 2) * this.Sx ) );
-				this.distanceY = Math.ceil( Math.sqrt( Math.pow(this.distance, 2) - Math.pow((this.x-player.x), 2) * this.Sx ) );
+				// 可把 (this.y-player.y) 代成Y  (this.x-player.x)代成X 來理解下面這段算式  這段在計算 X Y各要前進多少
+				// ((this.y-player.y)*x)^2 + ((this.x-player.x)*x)^2 = this.distance^2;
+				// ((this.y-player.y)^2 * x^2 ) + ((this.x-player.x)^2 * x^2 ) = this.distance^2;
+				// ( ( (this.y-player.y)^2 ) + ( (this.x-player.x)^2 ) ) * x^2 = this.distance^2;
+				// x^2 = this.distance^2 / ( ( (this.y-player.y)^2 ) + ( (this.x-player.x)^2 ) );
+				// x = Math.sqrt( this.distance^2 / ( ( (this.y-player.y)^2 ) + ( (this.x-player.x)^2 ) ) );
+				this.Sx = Math.sqrt( Math.pow(this.distance,2)/(Math.pow( (this.y-player.y), 2) + Math.pow( (this.x-player.x), 2) ) );
+				this.distanceX = Math.sqrt( Math.pow(this.distance, 2) - Math.pow((this.y-player.y)*this.Sx, 2) );
+				this.distanceY = Math.sqrt( Math.pow(this.distance, 2) - Math.pow((this.x-player.x)*this.Sx, 2)  );
 				this.Time = this.distance / this.kickSpeed;
-				
-				console.log('this.x:'+this.x);
-				console.log('this.y:'+this.y);
-				console.log('player.x:'+player.x);
-				console.log('player.y:'+player.y);
-				console.log('distance:'+this.distance);
-				console.log('distanceX:'+this.distanceX);
-				console.log('distanceY:'+this.distanceY);
-				console.log('Sx:'+this.Sx);
-				
 				
 				if(this.x-player.x > 0)
 				{
@@ -399,24 +371,27 @@ function gameload()
 				{
 					this.targetPositionY = this.y- this.distanceY;
 				}
-				
-				
-				console.log('計算踢人的座標位置中....');
 			}
 			else
 			{
 				if(this.x-player.x > 0)
 				{
+					console.log('this.x-player.x > 0');
+					console.log('this.x:'+this.x);
+					console.log('x速度:'+this.distanceX/this.Time);
 					this.x += this.distanceX/this.Time;
 					
-					if(Math.abs(this.targetPositionX - this.x) < this.kickSpeed*(this.distanceX/(this.distanceX+this.distanceY)))
+					if(Math.abs(this.targetPositionX - this.x) < this.distanceX/this.Time || this.targetPositionX -this.x <=0)
 						this.x = this.targetPositionX;
 				}
 				else if(this.x-player.x < 0)
 				{
+					console.log('this.x-player.x < 0');
+					console.log('this.x:'+this.x);
+					console.log('x速度:'+this.distanceX/this.Time);
 					this.x -= this.distanceX/this.Time;
 					
-					if(Math.abs(this.targetPositionX - this.x) < this.kickSpeed*(this.distanceX/(this.distanceX+this.distanceY)))
+					if(Math.abs(this.targetPositionX - this.x) < this.distanceX/this.Time || this.targetPositionX -this.x >=0)
 						this.x = this.targetPositionX;
 				}
 				
@@ -424,14 +399,14 @@ function gameload()
 				{
 					this.y += this.distanceY/this.Time;
 					
-					if(Math.abs(this.targetPositionY - this.y) < this.kickSpeed*(this.distanceY/(this.distanceX+this.distanceY)))
+					if(Math.abs(this.targetPositionY - this.y) < this.distanceY/this.Time || this.targetPositionY -this.y <=0)
 						this.y = this.targetPositionY;
 				}
 				else if(this.y-player.y < 0)
 				{
 					this.y -= this.distanceY/this.Time;
 					
-					if(Math.abs(this.targetPositionY - this.y) < this.kickSpeed*(this.distanceY/(this.distanceX+this.distanceY)))
+					if(Math.abs(this.targetPositionY - this.y) < this.distanceY/this.Time || this.targetPositionY -this.y >=0)
 						this.y = this.targetPositionY;
 				}
 				if(this.x == this.targetPositionX && this.y == this.targetPositionY)
