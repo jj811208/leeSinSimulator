@@ -158,8 +158,7 @@ function gameload()
 				break;
 		}
 	}
-	
-	player = new function() 
+	function Character() 
 	{
 		this.x = 50;
 		this.y = 50;	
@@ -167,8 +166,8 @@ function gameload()
 		
 		this.draw = function() 
 		{
-			//臉圓
 			LSctx.clearRect(0, 0, LSctx.canvas.width, LSctx.canvas.height);
+			//臉圓
 			LSctx.beginPath();
 			LSctx.lineWidth = 8;
 			LSctx.arc(this.x,this.y,30,0,Math.PI*2,true);
@@ -207,48 +206,6 @@ function gameload()
 			LSctx.lineTo(this.x-10,this.y+20);
 			LSctx.stroke();
 			LSctx.closePath();
-			
-			/*
-			//鬍渣
-			LSctx.beginPath();
-			LSctx.lineWidth = 1;
-			LSctx.moveTo(this.x+10,this.y+32);
-			LSctx.lineTo(this.x+10,this.y+30);
-			LSctx.moveTo(this.x+10,this.y+28);
-			LSctx.lineTo(this.x+10,this.y+26);
-			LSctx.moveTo(this.x+10,this.y+24);
-			LSctx.lineTo(this.x+10,this.y+22);
-			LSctx.moveTo(this.x+10,this.y+20);
-			LSctx.lineTo(this.x+10,this.y+18);
-			LSctx.moveTo(this.x+6,this.y+31);
-			LSctx.lineTo(this.x+6,this.y+29);
-			LSctx.moveTo(this.x+6,this.y+27);
-			LSctx.lineTo(this.x+6,this.y+25);
-			LSctx.moveTo(this.x+6,this.y+23);
-			LSctx.lineTo(this.x+6,this.y+21);
-			LSctx.moveTo(this.x+3,this.y+20);
-			LSctx.lineTo(this.x+3,this.y+18);
-			LSctx.moveTo(this.x,this.y+23);
-			LSctx.lineTo(this.x,this.y+21);			
-			LSctx.moveTo(this.x-3,this.y+20);
-			LSctx.lineTo(this.x-3,this.y+18);	
-			LSctx.moveTo(this.x-6,this.y+31);
-			LSctx.lineTo(this.x-6,this.y+29);
-			LSctx.moveTo(this.x-6,this.y+27);
-			LSctx.lineTo(this.x-6,this.y+25);
-			LSctx.moveTo(this.x-6,this.y+23);
-			LSctx.lineTo(this.x-6,this.y+21);	
-			LSctx.moveTo(this.x-10,this.y+32);
-			LSctx.lineTo(this.x-10,this.y+30);
-			LSctx.moveTo(this.x-10,this.y+28);
-			LSctx.lineTo(this.x-10,this.y+26);
-			LSctx.moveTo(this.x-10,this.y+24);
-			LSctx.lineTo(this.x-10,this.y+22);
-			LSctx.moveTo(this.x-10,this.y+20);
-			LSctx.lineTo(this.x-10,this.y+18);
-			LSctx.stroke();
-			LSctx.closePath();
-			*/
 		}
 		
 		this.move = function()
@@ -294,6 +251,8 @@ function gameload()
 		}
 		
 	}
+	
+	var player = new Character();
 	
 	enemy = new function()
 	{
