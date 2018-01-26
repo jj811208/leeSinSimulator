@@ -1,7 +1,15 @@
 
+body
+{
+	overflow:hidden;
+	margin: 0;
+    padding: 0;
+}
 canvas
 {
 	//border: 1px solid #000000;
+	height:100%;
+	width:100%;
 }
 
 #canvasManager
@@ -12,10 +20,10 @@ canvas
 
 #background 
 {
-  z-index: 0;
   background-image:url('../image/background.jpg');
   background-repeat:no-repeat;
   background-size:cover;
+  z-index: 0;
 }
 
 #LeeSin 
@@ -31,4 +39,11 @@ canvas
   top: 0;
   left: 0;
   z-index: 2;
+}
+#UI
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
 }

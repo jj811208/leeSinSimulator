@@ -8,14 +8,25 @@ function gameload()
 	var LSctx = LeeSinCanvas.getContext('2d'); 
 	var Sctx = SkillCanvas.getContext('2d'); 
 	//LSctx.fillStyle = 'rgba(255, 255, 255, 0)';
-	
+
 	//設定canvas長寬
-	Bctx.canvas.width = window.innerWidth -20;
-	Bctx.canvas.height = window.innerHeight -30;
-	LSctx.canvas.width = window.innerWidth -20;
-	LSctx.canvas.height = window.innerHeight -30;
-	Sctx.canvas.width = window.innerWidth -20;
-	Sctx.canvas.height = window.innerHeight -30;
+	 Bctx.canvas.width = window.innerWidth;
+	 Bctx.canvas.height = window.innerHeight;
+	 LSctx.canvas.width = window.innerWidth;
+	 LSctx.canvas.height = window.innerHeight;
+	 Sctx.canvas.width = window.innerWidth;
+	 Sctx.canvas.height = window.innerHeight;
+	 
+	 //設定canvas長寬
+	function winsowSize() 
+	{
+		Bctx.canvas.width = window.innerWidth;
+		Bctx.canvas.height = window.innerHeight;
+		LSctx.canvas.width = window.innerWidth;
+		LSctx.canvas.height = window.innerHeight;
+		Sctx.canvas.width = window.innerWidth;
+		Sctx.canvas.height = window.innerHeight;
+	};	
 			
 	
 	//如果true人物將會移動
@@ -50,7 +61,10 @@ function gameload()
 	document.addEventListener("mouseup", rightMouseUp);
 	
 	//增加監聽器(監聽鍵盤)
-	document.addEventListener("keydown", checkKeyBoard);
+	document.addEventListener("keydown", checkKeyBoard);	
+	
+	//增加監聽器(自適應)
+	window.addEventListener("resize", winsowSize);
 	
 	//儲存滑鼠的座標
 	function trackMousePosition(event) 
